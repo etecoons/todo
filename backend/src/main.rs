@@ -5,10 +5,7 @@ use axum::{
 };
 use std::{collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 use tokio::sync::RwLock;
-use tower_http::{
-    cors::{Any, CorsLayer},
-    services::ServeDir,
-};
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
 mod auth;
 mod handlers;
@@ -79,12 +76,15 @@ async fn main() {
     });
 
     let cors = CorsLayer::new()
-        .allow_methods(Any)
-        .allow_headers(Any)
+        .allow_methods(vec![axum::http::Method::GET, axum::http::Method::POST])
+        .allow_headers(vec![
+            axum::http::header::CONTENT_TYPE,
+            axum::http::header::HeaderName::from_static("x-pin"),
+        ])
         .allow_credentials(true);
 
     let cors = if allowed_origins == "*" {
-        cors.allow_origin(Any)
+        cors.allow_origin(tower_http::cors::AllowOrigin::mirror_request())
     } else {
         let mut origins = Vec::new();
         for origin in allowed_origins.split(',') {
