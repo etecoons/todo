@@ -1,32 +1,49 @@
-use sha2::{Digest, Sha256};
 use shared::TodoLists;
+use std::fs::File;
+use std::io::Read;
 
 pub const MAX_ATTEMPTS: usize = 5;
 
-// Cryptographically secure constant-time string comparison using SHA-256 hashes
+// Cryptographically secure constant-time string comparison padded to 10 characters
 pub fn secure_compare(a: &str, b: &str) -> bool {
-    let mut hasher_a = Sha256::new();
-    hasher_a.update(a.as_bytes());
-    let a_hash = hasher_a.finalize();
+    let a_bytes = a.as_bytes();
+    let b_bytes = b.as_bytes();
+    let equal = a_bytes.len() == b_bytes.len();
 
-    let mut hasher_b = Sha256::new();
-    hasher_b.update(b.as_bytes());
-    let b_hash = hasher_b.finalize();
-
-    let mut result = 0;
-    for (x, y) in a_hash.iter().zip(b_hash.iter()) {
-        result |= x ^ y;
+    let mut diff = 0u8;
+    for i in 0..10 {
+        let char_a = if i < a_bytes.len() { a_bytes[i] } else { 0 };
+        let char_b = if i < b_bytes.len() { b_bytes[i] } else { 0 };
+        diff |= char_a ^ char_b;
     }
-    result == 0
+
+    equal && (diff == 0)
 }
 
+// Generate random alphanumeric 9-character ID using /dev/urandom or LCG
 pub fn generate_random_id() -> String {
-    use rand::Rng;
-    rand::thread_rng()
-        .sample_iter(&rand::distributions::Alphanumeric)
-        .take(9)
-        .map(char::from)
-        .collect()
+    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let mut bytes = [0u8; 9];
+
+    if let Ok(mut file) = File::open("/dev/urandom") {
+        let _ = file.read_exact(&mut bytes);
+    } else {
+        // Fallback LCG using system time as seed
+        let mut seed = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64;
+        for i in 0..9 {
+            seed = seed.wrapping_mul(6364136223846793005).wrapping_add(1);
+            bytes[i] = (seed >> 32) as u8;
+        }
+    }
+
+    bytes.iter_mut().for_each(|b| {
+        *b = CHARSET[(*b as usize) % CHARSET.len()];
+    });
+
+    String::from_utf8_lossy(&bytes).into_owned()
 }
 
 pub fn run_todo_migrations(data_file: &str) {

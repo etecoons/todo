@@ -125,8 +125,13 @@ pub async fn verify_pin(
             .into_response();
     }
 
-    use rand::Rng;
-    let delay_ms = rand::thread_rng().gen_range(50..150);
+    let delay_ms = {
+        let seed = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos() as u64;
+        50 + (seed % 101)
+    };
     tokio::time::sleep(Duration::from_millis(delay_ms)).await;
 
     let valid = secure_compare(&payload.pin, pin_env);
@@ -198,21 +203,22 @@ pub async fn get_todos(State(state): State<SharedState>) -> Response {
 }
 
 pub async fn save_todos(State(state): State<SharedState>, Json(payload): Json<Value>) -> Response {
-    let content = match serde_json::to_string_pretty(&payload) {
-        Ok(c) => c,
-        Err(_) => return (StatusCode::BAD_REQUEST, "Invalid JSON").into_response(),
-    };
-
     let temp_file = format!("{}.tmp", state.data_file);
-    if let Err(e) = tokio::fs::write(&temp_file, content).await {
-        eprintln!("Failed to write to temp file: {}", e);
-        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save todos").into_response();
-    }
+    let state_clone = state.clone();
 
-    if let Err(e) = tokio::fs::rename(&temp_file, &state.data_file).await {
-        eprintln!("Failed to rename temp file to data file: {}", e);
-        return (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save todos").into_response();
-    }
+    let write_res = tokio::task::spawn_blocking(move || {
+        use std::fs::File;
+        use std::io::BufWriter;
+        let file = File::create(&temp_file)?;
+        let writer = BufWriter::new(file);
+        serde_json::to_writer_pretty(writer, &payload)?;
+        std::fs::rename(&temp_file, &state_clone.data_file)?;
+        Ok::<(), std::io::Error>(())
+    })
+    .await;
 
-    Json(serde_json::json!({ "success": true })).into_response()
+    match write_res {
+        Ok(Ok(())) => Json(serde_json::json!({ "success": true })).into_response(),
+        _ => (StatusCode::INTERNAL_SERVER_ERROR, "Failed to save todos").into_response(),
+    }
 }

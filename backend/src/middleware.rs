@@ -62,20 +62,12 @@ pub async fn origin_validation_middleware(
         .and_then(|val| val.to_str().ok());
 
     if let Some(origin_str) = origin {
-        let origin_norm = if let Ok(url) = url::Url::parse(origin_str) {
-            url.origin().ascii_serialization()
-        } else {
-            origin_str.to_string()
-        };
+        let origin_norm = extract_origin(origin_str);
 
-        let allowed = state.allowed_origins.split(',').any(|o| {
-            let o_trimmed = o.trim();
-            if let Ok(url) = url::Url::parse(o_trimmed) {
-                url.origin().ascii_serialization() == origin_norm
-            } else {
-                o_trimmed == origin_norm
-            }
-        });
+        let allowed = state
+            .allowed_origins
+            .split(',')
+            .any(|o| extract_origin(o.trim()) == origin_norm);
 
         if allowed {
             next.run(request).await
@@ -84,5 +76,19 @@ pub async fn origin_validation_middleware(
         }
     } else {
         (StatusCode::FORBIDDEN, "Forbidden").into_response()
+    }
+}
+
+fn extract_origin(url: &str) -> &str {
+    if let Some(pos) = url.find("://") {
+        let start = pos + 3;
+        let rest = &url[start..];
+        if let Some(end) = rest.find('/') {
+            &url[..start + end]
+        } else {
+            url
+        }
+    } else {
+        url.trim()
     }
 }
