@@ -19,7 +19,7 @@ mod static_files;
 mod tests;
 
 use auth::run_todo_migrations;
-use handlers::{get_config, get_pin_required, get_todos, save_todos, verify_pin, logout};
+use handlers::{get_config, get_pin_required, get_todos, logout, save_todos, verify_pin};
 use middleware::{auth_middleware, origin_validation_middleware};
 use state::AppState;
 use static_files::{

@@ -1,8 +1,4 @@
 use super::*;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use std::collections::HashMap;
-use std::net::SocketAddr;
 use axum::{
     extract::{ConnectInfo, State},
     http::{HeaderMap, StatusCode},
@@ -10,6 +6,10 @@ use axum::{
 };
 use axum_extra::extract::cookie::CookieJar;
 use shared::VerifyPinRequest;
+use std::collections::HashMap;
+use std::net::SocketAddr;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[test]
 fn test_secure_compare() {
@@ -91,12 +91,30 @@ async fn test_verify_pin_handler() {
     let jar = CookieJar::new();
 
     // Verify correct PIN
-    let req = VerifyPinRequest { pin: "1234".to_string() };
-    let res = handlers::verify_pin(State(state.clone()), connect_info.clone(), headers.clone(), jar.clone(), Json(req)).await;
+    let req = VerifyPinRequest {
+        pin: "1234".to_string(),
+    };
+    let res = handlers::verify_pin(
+        State(state.clone()),
+        connect_info.clone(),
+        headers.clone(),
+        jar.clone(),
+        Json(req),
+    )
+    .await;
     assert_eq!(res.status(), StatusCode::OK);
 
     // Verify incorrect PIN
-    let req_wrong = VerifyPinRequest { pin: "5678".to_string() };
-    let res_wrong = handlers::verify_pin(State(state.clone()), connect_info, headers, jar, Json(req_wrong)).await;
+    let req_wrong = VerifyPinRequest {
+        pin: "5678".to_string(),
+    };
+    let res_wrong = handlers::verify_pin(
+        State(state.clone()),
+        connect_info,
+        headers,
+        jar,
+        Json(req_wrong),
+    )
+    .await;
     assert_eq!(res_wrong.status(), StatusCode::UNAUTHORIZED);
 }

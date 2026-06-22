@@ -3,9 +3,9 @@ use gloo_timers::callback::Timeout;
 use yew::prelude::*;
 
 use crate::api;
+use crate::header::Header;
 use crate::i18n;
 use crate::login::Login;
-use crate::header::Header;
 use crate::todo_list::TodoList;
 use crate::types::ToastType;
 use shared::{PinRequiredResponse, SiteConfig, TodoLists};
@@ -13,18 +13,22 @@ use shared::{PinRequiredResponse, SiteConfig, TodoLists};
 #[function_component(App)]
 pub fn app() -> Html {
     let site_config = use_state(|| None::<SiteConfig>);
-    let pin_required = use_state(|| Some(PinRequiredResponse {
-        required: true, length: 4, locked: false, attempts_left: 5, lockout_minutes: 15,
-    }));
+    let pin_required = use_state(|| {
+        Some(PinRequiredResponse {
+            required: true,
+            length: 4,
+            locked: false,
+            attempts_left: 5,
+            lockout_minutes: 15,
+        })
+    });
     let authenticated = use_state(|| false);
     let todos = use_state(|| None::<TodoLists>);
     let current_list = use_state(|| "List 1".to_string());
     let active_notification = use_state(|| None::<(String, String)>);
     let active_timeout = use_mut_ref(|| None::<Timeout>);
     let pin_error = use_state(|| None::<String>);
-    let theme = use_state(|| {
-        StorageService::get_item("theme", "dark")
-    });
+    let theme = use_state(|| StorageService::get_item("theme", "dark"));
     let locale = use_state(|| {
         let local_lang = StorageService::get_item("lang", "en");
         i18n::Locale::from_str(&local_lang)
@@ -32,7 +36,9 @@ pub fn app() -> Html {
 
     {
         let locale = locale.clone();
-        use_effect_with(locale.clone(), move |loc| { StorageService::set_item("lang", loc.to_str()); });
+        use_effect_with(locale.clone(), move |loc| {
+            StorageService::set_item("lang", loc.to_str());
+        });
     }
 
     let show_toast = {
@@ -58,9 +64,19 @@ pub fn app() -> Html {
     };
 
     let load_todos = {
-        let (todos, current_list, authenticated, show_toast) = (todos.clone(), current_list.clone(), authenticated.clone(), show_toast.clone());
+        let (todos, current_list, authenticated, show_toast) = (
+            todos.clone(),
+            current_list.clone(),
+            authenticated.clone(),
+            show_toast.clone(),
+        );
         move || {
-            let (todos, current_list, authenticated, show_toast) = (todos.clone(), current_list.clone(), authenticated.clone(), show_toast.clone());
+            let (todos, current_list, authenticated, show_toast) = (
+                todos.clone(),
+                current_list.clone(),
+                authenticated.clone(),
+                show_toast.clone(),
+            );
             wasm_bindgen_futures::spawn_local(async move {
                 match api::fetch_todos_raw().await {
                     Ok(resp) => {
@@ -76,25 +92,35 @@ pub fn app() -> Html {
                             todos.set(Some(data));
                         }
                     }
-                    Err(_) => show_toast.emit(("Failed to load todos".to_string(), ToastType::Error)),
+                    Err(_) => {
+                        show_toast.emit(("Failed to load todos".to_string(), ToastType::Error))
+                    }
                 }
             });
         }
     };
 
     {
-        let (site_config, pin_required, load_todos) = (site_config.clone(), pin_required.clone(), load_todos.clone());
+        let (site_config, pin_required, load_todos) = (
+            site_config.clone(),
+            pin_required.clone(),
+            load_todos.clone(),
+        );
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(config) = api::fetch_config().await {
                     if let Some(win) = web_sys::window() {
-                        if let Some(doc) = win.document() { doc.set_title(&config.site_title); }
+                        if let Some(doc) = win.document() {
+                            doc.set_title(&config.site_title);
+                        }
                     }
                     site_config.set(Some(config));
                 }
             });
             wasm_bindgen_futures::spawn_local(async move {
-                if let Ok(data) = api::fetch_pin_required().await { pin_required.set(Some(data)); }
+                if let Ok(data) = api::fetch_pin_required().await {
+                    pin_required.set(Some(data));
+                }
             });
             load_todos();
         });
@@ -104,31 +130,56 @@ pub fn app() -> Html {
         let theme = theme.clone();
         move |_| {
             let new = match theme.as_str() {
-                "light" => "dark", "dark" => "nord", "nord" => "dracula", "dracula" => "sepia", _ => "light",
+                "light" => "dark",
+                "dark" => "nord",
+                "nord" => "dracula",
+                "dracula" => "sepia",
+                _ => "light",
             };
-            let _ = web_sys::window().unwrap().document().unwrap().document_element().unwrap().set_attribute("data-theme", new);
+            let _ = web_sys::window()
+                .unwrap()
+                .document()
+                .unwrap()
+                .document_element()
+                .unwrap()
+                .set_attribute("data-theme", new);
             StorageService::set_item("theme", new);
             theme.set(new.to_string());
         }
     };
 
     let verify_submit_pin = {
-        let (pin_error, pin_required, load_todos, show_toast) = (pin_error.clone(), pin_required.clone(), load_todos.clone(), show_toast.clone());
+        let (pin_error, pin_required, load_todos, show_toast) = (
+            pin_error.clone(),
+            pin_required.clone(),
+            load_todos.clone(),
+            show_toast.clone(),
+        );
         move |pin: String| {
-            let (pin_error, pin_required, load_todos, show_toast) = (pin_error.clone(), pin_required.clone(), load_todos.clone(), show_toast.clone());
+            let (pin_error, pin_required, load_todos, show_toast) = (
+                pin_error.clone(),
+                pin_required.clone(),
+                load_todos.clone(),
+                show_toast.clone(),
+            );
             wasm_bindgen_futures::spawn_local(async move {
                 if let Ok(data) = api::verify_pin(&pin).await {
                     if data.valid {
                         pin_error.set(None);
                         load_todos();
-                        show_toast.emit(("Authenticated successfully".to_string(), ToastType::Success));
+                        show_toast
+                            .emit(("Authenticated successfully".to_string(), ToastType::Success));
                     } else {
                         pin_error.set(data.error.clone());
                         if let Some(left) = data.attempts_left {
                             let mut updated = (*pin_required).clone().unwrap();
                             updated.attempts_left = left;
-                            if let Some(locked) = data.locked { updated.locked = locked; }
-                            if let Some(m) = data.lockout_minutes { updated.lockout_minutes = m; }
+                            if let Some(locked) = data.locked {
+                                updated.locked = locked;
+                            }
+                            if let Some(m) = data.lockout_minutes {
+                                updated.lockout_minutes = m;
+                            }
                             pin_required.set(Some(updated));
                         }
                     }
@@ -137,15 +188,22 @@ pub fn app() -> Html {
         }
     };
 
-    let is_auth = *authenticated || pin_required.as_ref().map(|pr| !pr.required).unwrap_or(false);
+    let is_auth = *authenticated
+        || pin_required
+            .as_ref()
+            .map(|pr| !pr.required)
+            .unwrap_or(false);
     let site_config_fallback = site_config.as_ref().cloned().unwrap_or_else(|| SiteConfig {
-        site_title: "RustDo".to_string(), single_list: false,
+        site_title: "RustDo".to_string(),
+        single_list: false,
     });
     let is_pin_required = pin_required.as_ref().map(|pr| pr.required).unwrap_or(false);
     let on_logout = {
-        let (authenticated, show_toast, todos) = (authenticated.clone(), show_toast.clone(), todos.clone());
+        let (authenticated, show_toast, todos) =
+            (authenticated.clone(), show_toast.clone(), todos.clone());
         Callback::from(move |_| {
-            let (authenticated, show_toast, todos) = (authenticated.clone(), show_toast.clone(), todos.clone());
+            let (authenticated, show_toast, todos) =
+                (authenticated.clone(), show_toast.clone(), todos.clone());
             wasm_bindgen_futures::spawn_local(async move {
                 if matches!(api::logout().await, Ok(true)) {
                     authenticated.set(false);

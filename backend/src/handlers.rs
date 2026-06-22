@@ -224,9 +224,6 @@ pub async fn save_todos(State(state): State<SharedState>, Json(payload): Json<Va
 }
 
 pub async fn logout(cookie_jar: CookieJar) -> impl IntoResponse {
-    let cookie = Cookie::build(("RUSTDO_PIN", ""))
-        .path("/")
-        .build();
+    let cookie = Cookie::build(("RUSTDO_PIN", "")).path("/").build();
     (StatusCode::OK, cookie_jar.remove(cookie))
 }
-

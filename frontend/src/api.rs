@@ -39,4 +39,3 @@ pub async fn logout() -> Result<bool, gloo_net::Error> {
     let resp = Request::post("/api/logout").send().await?;
     Ok(resp.ok())
 }
-
