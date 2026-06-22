@@ -1,23 +1,12 @@
 use axum::{
     extract::State,
     http::{header, StatusCode},
-    response::{Html, IntoResponse, Response},
+    response::{IntoResponse, Response},
     Json,
 };
 use std::path::Path;
 
 use crate::state::SharedState;
-
-pub async fn serve_index() -> Response {
-    match tokio::fs::read_to_string("frontend/dist/index.html").await {
-        Ok(html) => Html(html).into_response(),
-        Err(_) => (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "Frontend not compiled. Please run trunk build inside frontend/.",
-        )
-            .into_response(),
-    }
-}
 
 pub async fn serve_favicon() -> Response {
     serve_static_file("frontend/dist/favicon.svg", "image/svg+xml").await

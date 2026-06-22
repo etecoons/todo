@@ -5,7 +5,10 @@ use axum::{
 };
 use std::{collections::HashMap, net::SocketAddr, sync::Arc, time::Duration};
 use tokio::sync::RwLock;
-use tower_http::{cors::CorsLayer, services::ServeDir};
+use tower_http::{
+    cors::CorsLayer,
+    services::{ServeDir, ServeFile},
+};
 
 mod auth;
 mod handlers;
@@ -18,8 +21,7 @@ use handlers::{get_config, get_pin_required, get_todos, save_todos, verify_pin};
 use middleware::{auth_middleware, origin_validation_middleware};
 use state::AppState;
 use static_files::{
-    build_asset_manifest, serve_asset_manifest, serve_favicon, serve_index, serve_manifest,
-    serve_service_worker,
+    build_asset_manifest, serve_asset_manifest, serve_favicon, serve_manifest, serve_service_worker,
 };
 
 #[tokio::main]
@@ -118,12 +120,13 @@ async fn main() {
 
     let app = Router::new()
         .nest("/api", api_routes)
-        .nest_service("/assets", ServeDir::new("frontend/dist/assets"))
         .route("/favicon.svg", get(serve_favicon))
         .route("/manifest.json", get(serve_manifest))
         .route("/asset-manifest.json", get(serve_asset_manifest))
         .route("/service-worker.js", get(serve_service_worker))
-        .fallback(serve_index)
+        .fallback_service(
+            ServeDir::new("frontend/dist").fallback(ServeFile::new("frontend/dist/index.html")),
+        )
         .layer(cors)
         .with_state(app_state.clone());
 
