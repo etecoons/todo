@@ -104,56 +104,58 @@ pub fn login(props: &LoginProps) -> Html {
     };
 
     html! {
-        <div class="login-container">
-            <button id="lang-toggle" class="lang-toggle" onclick={on_toggle_lang} aria-label="Toggle language">
-                { locale.next().to_str().to_uppercase() }
-            </button>
-            <button id="theme-toggle" class="theme-toggle" onclick={props.on_toggle_theme.clone()} aria-label="Toggle theme">
-                {theme_toggle_icon}
-            </button>
-            <div id="login-content">
-                <div class="pin-header">
-                    <h1 id="site-title">{"RustDo"}</h1>
-                    <h2 id="pin-description">
-                        {
-                            if pr.locked {
-                                t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize))
-                            } else {
-                                t.t(TransKey::EnterPin)
+        <div class="login-page">
+            <div class="login-container">
+                <button id="lang-toggle" class="lang-toggle" onclick={on_toggle_lang} aria-label="Toggle language">
+                    { locale.next().to_str().to_uppercase() }
+                </button>
+                <button id="themeToggle" onclick={props.on_toggle_theme.clone()} aria-label="Toggle theme">
+                    {theme_toggle_icon}
+                </button>
+                <div class="login-box">
+                    <div class="pin-header">
+                        <h1 id="site-title">{"RustDo"}</h1>
+                        <h2 id="pin-description">
+                            {
+                                if pr.locked {
+                                    t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize))
+                                } else {
+                                    t.t(TransKey::EnterPin)
+                                }
+                            }
+                        </h2>
+                    </div>
+                    <form id="pin-form" onsubmit={on_submit}>
+                        <div class="pin-wrapper">
+                            <input
+                                ref={input_ref}
+                                type="password"
+                                class="pin-input-field"
+                                value={(*pin_input).clone()}
+                                oninput={on_input}
+                                disabled={pr.locked}
+                                placeholder={t.t(TransKey::PinInputPlaceholder(pr.length))}
+                                maxlength={pr.length.to_string()}
+                                autofocus=true
+                            />
+                        </div>
+                    </form>
+                    <div class="pin-status">
+                        if pr.locked {
+                            <p id="lockoutNotice" class="lockout-notice" style="display: block;">
+                                { t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize)) }
+                            </p>
+                        } else {
+                            if pr.attempts_left < 5 {
+                                <p id="attemptsRemaining" class="attempts-remaining" style="display: block;">
+                                    { t.t(TransKey::AttemptsRemaining(pr.attempts_left)) }
+                                </p>
                             }
                         }
-                    </h2>
-                </div>
-                <form id="pin-form" onsubmit={on_submit}>
-                    <div class="pin-wrapper">
-                        <input
-                            ref={input_ref}
-                            type="password"
-                            class="pin-input-field"
-                            value={(*pin_input).clone()}
-                            oninput={on_input}
-                            disabled={pr.locked}
-                            placeholder={t.t(TransKey::PinInputPlaceholder(pr.length))}
-                            maxlength={pr.length.to_string()}
-                            autofocus=true
-                        />
-                    </div>
-                </form>
-                <div class="pin-status">
-                    if pr.locked {
-                        <p id="lockoutNotice" class="lockout-notice" style="display: block;">
-                            { t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize)) }
-                        </p>
-                    } else {
-                        if pr.attempts_left < 5 {
-                            <p id="attemptsRemaining" class="attempts-remaining" style="display: block;">
-                                { t.t(TransKey::AttemptsRemaining(pr.attempts_left)) }
-                            </p>
+                        if let Some(ref err) = props.pin_error {
+                            <p id="pinError" class="pin-error" style="display: block;">{ err }</p>
                         }
-                    }
-                    if let Some(ref err) = props.pin_error {
-                        <p id="pinError" class="pin-error" style="display: block;">{ err }</p>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
