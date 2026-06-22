@@ -15,8 +15,10 @@ RUN case "$(uname -m)" in \
     esac && \
     wget -qO- "https://github.com/trunk-rs/trunk/releases/download/v0.21.14/trunk-${ARCH}-unknown-linux-musl.tar.gz" | tar -xzf- -C /usr/local/bin
 
-# Copy shared & frontend crates
+# Copy cargo files & all crates
+COPY Cargo.toml /app/Cargo.toml
 COPY shared /app/shared
+COPY backend /app/backend
 COPY frontend /app/frontend
 
 # Build frontend
