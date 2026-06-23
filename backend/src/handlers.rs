@@ -140,9 +140,15 @@ pub async fn verify_pin(
     if valid {
         attempts.remove(&client_ip);
 
+        let is_secure = headers
+            .get("x-forwarded-proto")
+            .and_then(|v| v.to_str().ok())
+            .map(|v| v.eq_ignore_ascii_case("https"))
+            .unwrap_or(false);
+
         let cookie = Cookie::build(("RUSTDO_PIN", payload.pin))
             .http_only(true)
-            .secure(state.is_production)
+            .secure(is_secure)
             .same_site(axum_extra::extract::cookie::SameSite::Strict)
             .path("/")
             .build();
