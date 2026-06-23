@@ -136,13 +136,14 @@ pub fn app() -> Html {
                 "dracula" => "sepia",
                 _ => "light",
             };
-            let _ = web_sys::window()
+            let el = web_sys::window()
                 .unwrap()
                 .document()
                 .unwrap()
                 .document_element()
-                .unwrap()
-                .set_attribute("data-theme", new);
+                .unwrap();
+            let _ = el.set_attribute("data-theme", new);
+            let _ = el.set_attribute("class", new);
             StorageService::set_item("theme", new);
             theme.set(new.to_string());
         }

@@ -45,6 +45,17 @@ pub fn header(props: &HeaderProps) -> Html {
         props.on_logout.clone()
     };
 
+    let theme_toggle_tooltip = match locale {
+        crate::i18n::Locale::Zh => "切换主题",
+        crate::i18n::Locale::Es => "Cambiar tema",
+        crate::i18n::Locale::De => "Design umschalten",
+        crate::i18n::Locale::Ja => "テーマ切り替え",
+        crate::i18n::Locale::Fr => "Changer de thème",
+        crate::i18n::Locale::Pt => "Alternar tema",
+        crate::i18n::Locale::Ru => "Переключить тему",
+        _ => "Toggle theme",
+    };
+
     html! {
         <header>
             <div id="header-title">
@@ -70,7 +81,7 @@ pub fn header(props: &HeaderProps) -> Html {
                         }
                     </select>
                 </div>
-                <button id="theme-toggle" class="icon-button" aria-label="Toggle theme" onclick={on_toggle}>
+                <button id="theme-toggle" class="icon-button" aria-label="Toggle theme" onclick={on_toggle} title={theme_toggle_tooltip}>
                     {
                         match props.theme.as_str() {
                             "dark" => html! {
