@@ -1,5 +1,9 @@
 # RustDo - Blazing Fast Todo List
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/UberMetroid/RustDo/main/frontend/Assets/favicon.png" alt="RustDo Logo" width="128" height="128">
+</p>
+
 RustDo is a blazing fast, single-purpose todo list application written in 100% Rust using Axum on the backend and Yew (WebAssembly) on the frontend.
 
 ---
