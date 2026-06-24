@@ -11,7 +11,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use crate::auth::{secure_compare, hash_pin, MAX_ATTEMPTS};
+use crate::auth::{secure_compare, hash_pin};
 use crate::state::{get_client_ip, SharedState};
 use shared::{PinRequiredResponse, SiteConfig, VerifyPinRequest, VerifyPinResponse};
 
@@ -30,13 +30,13 @@ pub async fn get_pin_required(
         .cloned()
         .unwrap_or((0, Instant::now()));
 
-    let locked = failed_count >= MAX_ATTEMPTS && last_attempt.elapsed() < LOCKOUT_TIME;
+    let locked = failed_count >= state.max_attempts && last_attempt.elapsed() < LOCKOUT_TIME;
     let attempts_left = if locked {
         0
-    } else if failed_count >= MAX_ATTEMPTS {
-        MAX_ATTEMPTS
+    } else if failed_count >= state.max_attempts {
+        state.max_attempts
     } else {
-        MAX_ATTEMPTS - failed_count
+        state.max_attempts - failed_count
     };
 
     let lockout_minutes = if locked {
@@ -84,7 +84,7 @@ pub async fn verify_pin(
     {
         let attempts = state.login_attempts.read().await;
         if let Some(&(failed_count, last_attempt)) = attempts.get(&client_ip) {
-            if failed_count >= MAX_ATTEMPTS && last_attempt.elapsed() < LOCKOUT_TIME {
+            if failed_count >= state.max_attempts && last_attempt.elapsed() < LOCKOUT_TIME {
                 let remaining = LOCKOUT_TIME.saturating_sub(last_attempt.elapsed());
                 let minutes = remaining.as_secs().div_ceil(60);
                 return (
@@ -110,7 +110,7 @@ pub async fn verify_pin(
         let entry = attempts.entry(client_ip).or_insert((0, Instant::now()));
         entry.0 = entry.0.saturating_add(1);
         entry.1 = Instant::now();
-        let left = MAX_ATTEMPTS.saturating_sub(entry.0);
+        let left = state.max_attempts.saturating_sub(entry.0);
 
         return (
             StatusCode::UNAUTHORIZED,
@@ -171,7 +171,7 @@ pub async fn verify_pin(
         let entry = attempts.entry(client_ip).or_insert((0, Instant::now()));
         entry.0 = entry.0.saturating_add(1);
         entry.1 = Instant::now();
-        let left = MAX_ATTEMPTS.saturating_sub(entry.0);
+        let left = state.max_attempts.saturating_sub(entry.0);
 
         (
             StatusCode::UNAUTHORIZED,

@@ -68,6 +68,11 @@ async fn main() {
 
     let asset_manifest = build_asset_manifest();
 
+    let max_attempts = std::env::var("MAX_ATTEMPTS")
+        .ok()
+        .and_then(|val| val.parse().ok())
+        .unwrap_or(5);
+
     let app_state = Arc::new(AppState {
         pin,
         site_title,
@@ -76,6 +81,7 @@ async fn main() {
         is_production,
         data_file,
         asset_manifest,
+        max_attempts,
         login_attempts: RwLock::new(HashMap::new()),
     });
 

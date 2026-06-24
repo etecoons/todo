@@ -2,7 +2,6 @@ use shared::TodoLists;
 use std::fs::File;
 use std::io::Read;
 
-pub const MAX_ATTEMPTS: usize = 5;
 
 // Cryptographically secure constant-time string comparison
 pub fn secure_compare(a: &str, b: &str) -> bool {
