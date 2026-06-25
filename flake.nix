@@ -21,10 +21,14 @@
         };
 
         # 1. Build the WASM frontend
-        frontend = pkgs.stdenv.mkDerivation {
+        frontend = rustPlatform.buildRustPackage {
           pname = "adam-frontend";
           version = "2.0.0";
           src = ./.;
+
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
 
           nativeBuildInputs = [
             rustVersion
@@ -92,10 +96,6 @@
             mkdir -p app/data
             mkdir -p app/frontend
             cp -r ${frontend}/dist app/frontend/dist
-            
-            # Ensure nobody (65534:65534) owns the workspace
-            chown -R 65534:65534 app
-            chmod -R 700 app
           '';
         };
 
