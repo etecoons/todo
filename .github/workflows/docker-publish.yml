@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - nix
   workflow_dispatch:
 
 env:
@@ -72,6 +73,8 @@ jobs:
             GHCR_TAGS="${GHCR_TAGS},${LOWER_IMAGE_NAME_GHCR}:latest"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
             GHCR_TAGS="${GHCR_TAGS},${LOWER_IMAGE_NAME_GHCR}:dev"
+          elif [ "${{ github.ref }}" = "refs/heads/nix" ]; then
+            GHCR_TAGS="${GHCR_TAGS},${LOWER_IMAGE_NAME_GHCR}:nix"
           fi
           
           # Initialize Docker Hub tags (if credentials exist)
@@ -82,6 +85,8 @@ jobs:
               DOCKER_TAGS="${DOCKER_TAGS},${LOWER_IMAGE_NAME_DOCKER}:latest"
             elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
               DOCKER_TAGS="${DOCKER_TAGS},${LOWER_IMAGE_NAME_DOCKER}:dev"
+            elif [ "${{ github.ref }}" = "refs/heads/nix" ]; then
+              DOCKER_TAGS="${DOCKER_TAGS},${LOWER_IMAGE_NAME_DOCKER}:nix"
             fi
           fi
           
