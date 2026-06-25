@@ -26,9 +26,67 @@ use static_files::{
     build_asset_manifest, serve_asset_manifest, serve_favicon, serve_favicon_png, serve_manifest,
     serve_service_worker,
 };
+use tracing_subscriber::{Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
+    let log_dir = std::env::var("LOG_DIR").ok().or_else(|| {
+        let data_dir = std::path::Path::new("/app/data");
+        if data_dir.is_dir() {
+            Some("/app/data/log".to_string())
+        } else {
+            Some("/app/log".to_string())
+        }
+    });
+
+    let (file_layer_error, file_layer_app) = if let Some(ref dir) = log_dir {
+        if dir == "off" || dir == "none" || dir == "false" {
+            (None, None)
+        } else {
+            let _ = std::fs::create_dir_all(dir);
+            let error_file = std::fs::OpenOptions::new()
+                .create(true)
+                .write(true)
+                .append(true)
+                .open(std::path::Path::new(dir).join("error.log"))
+                .ok();
+            let app_file = std::fs::OpenOptions::new()
+                .create(true)
+                .write(true)
+                .append(true)
+                .open(std::path::Path::new(dir).join("app.log"))
+                .ok();
+
+            let error_layer = error_file.map(|file| {
+                tracing_subscriber::fmt::layer()
+                    .with_writer(std::sync::Mutex::new(file))
+                    .with_ansi(false)
+                    .with_filter(tracing_subscriber::filter::LevelFilter::WARN)
+            });
+
+            let app_layer = app_file.map(|file| {
+                tracing_subscriber::fmt::layer()
+                    .with_writer(std::sync::Mutex::new(file))
+                    .with_ansi(false)
+                    .with_filter(tracing_subscriber::filter::LevelFilter::INFO)
+            });
+
+            (error_layer, app_layer)
+        }
+    } else {
+        (None, None)
+    };
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
+        )
+        .with(tracing_subscriber::fmt::layer())
+        .with(file_layer_error)
+        .with(file_layer_app)
+        .init();
+
+    dotenvy::from_path("/app/data/.env").ok();
     dotenvy::dotenv().ok();
 
     let port = std::env::var("PORT")

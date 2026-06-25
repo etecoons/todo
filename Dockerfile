@@ -42,6 +42,10 @@ WORKDIR /app
 # Install runtime dependencies
 RUN apk add --no-cache wget libc6-compat
 
+ENV PORT=4403
+ENV NODE_ENV=production
+ENV LOG_DIR=/app/log
+
 # Copy binaries and assets
 COPY --from=backend-builder /app/target/release/backend /app/backend
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
