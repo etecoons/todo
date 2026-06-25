@@ -1,7 +1,7 @@
 # Adam - Blazing Fast Todo List
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UberMetroid/adam/main/main/frontend/Assets/favicon.png" alt="Adam Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/UberMetroid/adam/main/frontend/Assets/favicon.png" alt="Adam Logo" width="128" height="128">
 </p>
 
 Adam is a blazing fast, single-purpose todo list application written in 100% Rust using Axum on the backend and Yew (WebAssembly) on the frontend.
