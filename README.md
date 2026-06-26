@@ -80,15 +80,6 @@ For development iteration, use the devShell:
 nix develop
 ```
 
-### APT (Debian / Ubuntu)
-
-Todo is also distributed as a `.deb` package from the official UberMetroid APT repository:
-
-```bash
-curl -fsSL https://ubermetroid.github.io/packages/apt/install.sh | sudo bash
-sudo apt install todo
-```
-
 ---
 
 ## 📋 Configuration Options
