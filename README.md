@@ -1,10 +1,10 @@
-# Adam - Blazing Fast Todo List
+# Todo - Blazing Fast Todo List
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UberMetroid/adam/main/frontend/Assets/favicon.png" alt="Adam Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/UberMetroid/todo/main/frontend/Assets/favicon.png" alt="Todo Logo" width="128" height="128">
 </p>
 
-Adam is a blazing fast, single-purpose todo list application written in 100% Rust using Axum on the backend and Yew (WebAssembly) on the frontend.
+Todo is a blazing fast, single-purpose todo list application written in 100% Rust using Axum on the backend and Yew (WebAssembly) on the frontend.
 
 ---
 
@@ -12,8 +12,8 @@ Adam is a blazing fast, single-purpose todo list application written in 100% Rus
 
 The Docker image is published to the following registries:
 
-*   **Docker Hub (Recommended)**: [ubermetroid/adam](https://hub.docker.com/r/ubermetroid/adam)
-*   **GitHub Container Registry (GHCR)**: [ghcr.io/ubermetroid/adam](https://github.com/UberMetroid/adam/pkgs/container/adam)
+*   **Docker Hub (Recommended)**: [ubermetroid/todo](https://hub.docker.com/r/ubermetroid/todo)
+*   **GitHub Container Registry (GHCR)**: [ghcr.io/ubermetroid/todo](https://github.com/UberMetroid/todo/pkgs/container/todo)
 
 ---
 
@@ -24,9 +24,9 @@ The Docker image is published to the following registries:
 ```yaml
 version: '3'
 services:
-  adam:
-    image: ubermetroid/adam:latest
-    container_name: adam
+  todo:
+    image: ubermetroid/todo:latest
+    container_name: todo
     restart: unless-stopped
     ports:
       - 4403:4403
@@ -34,10 +34,10 @@ services:
       - ./data:/app/data
     environment:
       - PORT=4403
-      - SITE_TITLE=Adam
+      - SITE_TITLE=Todo
       - BASE_URL=http://localhost:4403
       - ALLOWED_ORIGINS=*
-      - ADAM_PIN=1234
+      - TODO_PIN=1234
       - TZ=UTC
       - ENABLE_TRANSLATION=false
       - ENABLE_THEMES=true
@@ -57,7 +57,7 @@ docker compose up -d
 To build the Docker container locally from the source files:
 
 ```bash
-docker build -t ubermetroid/adam:latest .
+docker build -t ubermetroid/todo:latest .
 ```
 
 ---
@@ -69,10 +69,10 @@ Configure these settings inside your Docker Compose environment or container env
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `PORT` | The port number the backend HTTP server will bind to inside the container. | `4403` |
-| `SITE_TITLE` | Custom website title rendered in navigation headers, browser tabs, and PWA manifest. | `Adam` |
+| `SITE_TITLE` | Custom website title rendered in navigation headers, browser tabs, and PWA manifest. | `Todo` |
 | `BASE_URL` | Application base URL. Essential when deploying behind reverse proxies to ensure redirect and websocket links are resolved correctly. | `http://localhost:4403` |
 | `ALLOWED_ORIGINS` | Comma-separated list of allowed HTTP request origins (CORS filter). Use `*` to allow all origins. | `*` |
-| `ADAM_PIN` | Optional 4–10 digit PIN (numerical only) to lock access to the interface. Leave empty for public mode. | None |
+| `TODO_PIN` | Optional 4–10 digit PIN (numerical only) to lock access to the interface. Leave empty for public mode. | None |
 | `TZ` | Timezone for the container processes and logs. | `UTC` |
 | `SINGLE_LIST` | Force UI to hide list switcher and display only a single list. | `false` |
 | `ENABLE_TRANSLATION` | Enable the multi-language / translation selector in the navigation header (true/false). | `false` |

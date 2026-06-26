@@ -1,17 +1,17 @@
 services:
-  adam:
+  todo:
     build: .
-    image: ubermetroid/adam:latest
-    container_name: adam
+    image: ubermetroid/todo:latest
+    container_name: todo
     restart: unless-stopped
     ports:
       - ${PORT:-4403}:4403
     volumes:
-      - ${ADAM_DATA_PATH:-./data}:/app/data
+      - ${TODO_DATA_PATH:-./data}:/app/data
     environment:
       PORT: 4403
-      SITE_TITLE: ${ADAM_SITE_TITLE:-Adam}
-      ADAM_PIN: ${ADAM_PIN:-}
+      SITE_TITLE: ${TODO_SITE_TITLE:-Todo}
+      TODO_PIN: ${TODO_PIN:-}
       BASE_URL: ${BASE_URL:-http://localhost:4403}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
       TZ: ${TZ:-UTC}

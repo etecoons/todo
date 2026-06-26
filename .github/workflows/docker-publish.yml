@@ -64,7 +64,7 @@ jobs:
         id: meta
         run: |
           LOWER_IMAGE_NAME_GHCR=$(echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-          LOWER_IMAGE_NAME_DOCKER=$(echo "ubermetroid/adam" | tr '[:upper:]' '[:lower:]')
+          LOWER_IMAGE_NAME_DOCKER=$(echo "ubermetroid/todo" | tr '[:upper:]' '[:lower:]')
           VERSION=${{ steps.package_version.outputs.VERSION }}
           
           # Initialize GHCR tags
@@ -103,7 +103,7 @@ jobs:
         run: |
           IFS=',' read -ra GH_TAGS <<< "${{ steps.meta.outputs.GHCR_TAGS }}"
           for tag in "${GH_TAGS[@]}"; do
-            docker tag adam-nix:latest "$tag"
+            docker tag todo-nix:latest "$tag"
             docker push "$tag"
           done
 
@@ -112,6 +112,6 @@ jobs:
         run: |
           IFS=',' read -ra DH_TAGS <<< "${{ steps.meta.outputs.DOCKER_TAGS }}"
           for tag in "${DH_TAGS[@]}"; do
-            docker tag adam-nix:latest "$tag"
+            docker tag todo-nix:latest "$tag"
             docker push "$tag"
           done

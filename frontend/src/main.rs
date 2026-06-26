@@ -1,9 +1,9 @@
-// Adam Yew Frontend Entrypoint
+// Todo Yew Frontend Entrypoint
 //
-// This is the main entry point for the Adam web application.
+// This is the main entry point for the Todo web application.
 // It initializes and renders the main App component using Yew.
 //
-// Copyright (c) 2026 Adam Authors. All rights reserved.
+// Copyright (c) 2026 Todo Authors. All rights reserved.
 
 mod api;
 mod app;

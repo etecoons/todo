@@ -16,7 +16,10 @@ pub fn is_authenticated(state: &AppState, cookie_jar: &CookieJar, headers: &Head
         None => return true,
     };
 
-    let cookie_pin = cookie_jar.get("ADAM_PIN").map(|c| c.value());
+    let cookie_pin = cookie_jar
+        .get("TODO_PIN")
+        .or_else(|| cookie_jar.get("ADAM_PIN"))
+        .map(|c| c.value());
     let header_pin = headers.get("x-pin").and_then(|h| h.to_str().ok());
 
     match (cookie_pin, header_pin) {

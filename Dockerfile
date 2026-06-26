@@ -36,7 +36,7 @@ RUN cargo build --release --bin backend
 
 # Stage 3: Runtime image
 FROM alpine:latest
-LABEL org.opencontainers.image.source="https://github.com/UberMetroid/Adam"
+LABEL org.opencontainers.image.source="https://github.com/UberMetroid/todo"
 WORKDIR /app
 
 # Install runtime dependencies

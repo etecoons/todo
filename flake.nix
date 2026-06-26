@@ -1,5 +1,5 @@
 {
-  description = "Minimalist Nix-built container for Adam";
+  description = "Minimalist Nix-built container for Todo";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -22,7 +22,7 @@
 
         # 1. Build the WASM frontend
         frontend = rustPlatform.buildRustPackage {
-          pname = "adam-frontend";
+          pname = "todo-frontend";
           version = "2.0.0";
           src = ./.;
 
@@ -50,7 +50,7 @@
 
         # 2. Build the Axum backend
         backend = rustPlatform.buildRustPackage {
-          pname = "adam-backend";
+          pname = "todo-backend";
           version = "2.0.0";
           src = ./.;
 
@@ -75,7 +75,7 @@
 
         # 3. Create the layered Docker container image
         dockerImage = pkgs.dockerTools.buildLayeredImage {
-          name = "adam-nix";
+          name = "todo-nix";
           tag = "latest";
           
           # Run under the nobody user (UID 65534)

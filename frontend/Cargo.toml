@@ -4,9 +4,9 @@ version = "2.0.0"
 edition = "2021"
 authors = ["UberMetroid <admin@ubermetroid.com>"]
 license = "Apache-2.0"
-repository = "https://github.com/UberMetroid/Adam"
-homepage = "https://github.com/UberMetroid/Adam"
-description = "Yew frontend application for Adam."
+repository = "https://github.com/UberMetroid/todo"
+homepage = "https://github.com/UberMetroid/todo"
+description = "Yew frontend application for Todo."
 readme = "../README.md"
 
 [dependencies]
