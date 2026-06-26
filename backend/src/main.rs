@@ -25,8 +25,8 @@ use middleware::{
 };
 use state::AppState;
 use static_files::{
-    build_asset_manifest, serve_asset_manifest, serve_favicon, serve_favicon_png, serve_manifest,
-    serve_service_worker, serve_health,
+    build_asset_manifest, serve_asset_manifest, serve_favicon, serve_favicon_png, serve_health,
+    serve_manifest, serve_service_worker,
 };
 use tracing_subscriber::{Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
