@@ -58,7 +58,7 @@ EXPOSE 4403
 
 # Healthcheck
 HEALTHCHECK --interval=20s --timeout=5s --start-period=20s --retries=3 \
-    CMD wget --spider -q http://127.0.0.1:4403/api/config || exit 1
+    CMD wget --spider -q http://127.0.0.1:4403/health || exit 1
 
 # Run as Unraid nobody:users
 USER 99:100

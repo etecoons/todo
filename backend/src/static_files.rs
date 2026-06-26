@@ -20,6 +20,17 @@ pub async fn serve_service_worker() -> Response {
     serve_static_file("frontend/dist/service-worker.js", "application/javascript").await
 }
 
+pub async fn serve_health() -> impl IntoResponse {
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+    Json(serde_json::json!({
+        "status": "ok",
+        "timestamp": secs
+    }))
+}
+
 pub async fn serve_manifest(State(state): State<SharedState>) -> impl IntoResponse {
     let title = &state.site_title;
     let manifest = serde_json::json!({

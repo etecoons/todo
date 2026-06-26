@@ -26,7 +26,7 @@ use middleware::{
 use state::AppState;
 use static_files::{
     build_asset_manifest, serve_asset_manifest, serve_favicon, serve_favicon_png, serve_manifest,
-    serve_service_worker,
+    serve_service_worker, serve_health,
 };
 use tracing_subscriber::{Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -228,6 +228,7 @@ async fn main() {
         .route("/manifest.json", get(serve_manifest))
         .route("/asset-manifest.json", get(serve_asset_manifest))
         .route("/service-worker.js", get(serve_service_worker))
+        .route("/health", get(serve_health))
         .fallback_service(
             ServeDir::new("frontend/dist").fallback(ServeFile::new("frontend/dist/index.html")),
         )
