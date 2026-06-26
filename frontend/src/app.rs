@@ -22,7 +22,7 @@ pub fn app() -> Html {
             lockout_minutes: 15,
             enable_translation: false,
             enable_themes: true,
-            enable_print: true,
+            enable_print: false,
         })
     });
     let authenticated = use_state(|| false);
@@ -191,7 +191,7 @@ pub fn app() -> Html {
         site_title: "Todo".to_string(),
         single_list: false,
         enable_themes: true,
-        enable_print: true,
+        enable_print: false,
     });
     let is_pin_required = pin_required.as_ref().map(|pr| pr.required).unwrap_or(false);
     let on_logout = {

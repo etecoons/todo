@@ -41,7 +41,7 @@ services:
       - TZ=UTC
       - ENABLE_TRANSLATION=false
       - ENABLE_THEMES=true
-      - ENABLE_PRINT=true
+      - ENABLE_PRINT=false
 ```
 
 2. Run the container:
@@ -77,7 +77,7 @@ Configure these settings inside your Docker Compose environment or container env
 | `SINGLE_LIST` | Force UI to hide list switcher and display only a single list. | `false` |
 | `ENABLE_TRANSLATION` | Enable the multi-language / translation selector in the navigation header (true/false). | `false` |
 | `ENABLE_THEMES` | Enable the theme selector in the navigation header (true/false). | `true` |
-| `ENABLE_PRINT` | Enable the print button in the navigation header (true/false). | `true` |
+| `ENABLE_PRINT` | Enable the print button in the navigation header (true/false). | `false` |
 | `MAX_ATTEMPTS` | Number of failed PIN attempts permitted before locking out the user client IP address. | `5` |
 
 ---
