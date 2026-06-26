@@ -4,7 +4,19 @@
   <img src="https://raw.githubusercontent.com/UberMetroid/todo/main/frontend/Assets/favicon.png" alt="Todo Logo" width="128" height="128">
 </p>
 
-Todo is a blazing fast, single-purpose todo list application written in 100% Rust using Axum on the backend and Yew (WebAssembly) on the frontend.
+Todo is a blazing fast, single-purpose todo list application written in 100% Rust. Built with a high-performance Rust (Axum/Tokio) backend and a WebAssembly (Yew) frontend.
+
+---
+
+## ⚡ Key Features
+
+*   **Zebes Themes**: High-quality UI styling options based on the 6 classic Super Metroid regions (Crateria, Brinstar, Norfair, Wrecked Ship, Maridia, Tourian).
+*   **Access PIN Security**: Lock down the interface with an optional numerical PIN for absolute privacy.
+*   **Internationalization**: Built-in multilingual translation selector support.
+*   **Print Optimization**: Customized print stylesheet layout and print header action button.
+*   **Performance First**: Tiny resource footprint, zero external JS engine dependencies, and rapid page load speeds.
+*   **Multi-List Tasking**: Create and switch between multiple list tasks, or lock to a single list view.
+*   **Keyboard Shortcuts**: Quick keyboard management for lists and tasks.
 
 ---
 
