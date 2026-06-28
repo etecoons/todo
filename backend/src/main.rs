@@ -16,7 +16,7 @@ use tokio::sync::RwLock;
 use tower_http::services::{ServeDir, ServeFile};
 
 mod auth;
-mod handlers;
+mod routes;
 mod middleware;
 mod state;
 mod static_files;
@@ -25,7 +25,7 @@ mod tests;
 mod types;
 
 use auth::run_todo_migrations;
-use handlers::{get_config, get_pin_required, get_todos, logout, save_todos, verify_pin};
+use routes::{get_config, get_pin_required, get_todos, logout, save_todos, verify_pin};
 use middleware::{
     auth_middleware, origin_validation_middleware, rate_limit_middleware,
     security_headers_middleware,
