@@ -16,13 +16,24 @@ pub async fn get_todos(State(state): State<SharedState>) -> Response {
     // Run the read+parse on a blocking thread — file IO should not
     // block the executor.
     let read_result = tokio::task::spawn_blocking(move || {
-        let content = std::fs::read_to_string(&data_file)?;
-        let (todo_state, needs_rewrite) = TodoState::parse_with_migration(&content)
-            .map_err(|e| format!("data file is corrupt: {e}"))?;
-        Ok::<(TodoState, bool), Box<dyn std::error::Error + Send + Sync>>((
-            todo_state,
-            needs_rewrite,
-        ))
+        match std::fs::read_to_string(&data_file) {
+            Ok(content) => {
+                let (todo_state, needs_rewrite) = TodoState::parse_with_migration(&content)
+                    .map_err(|e| format!("data file is corrupt: {e}"))?;
+                Ok::<(TodoState, bool), Box<dyn std::error::Error + Send + Sync>>((
+                    todo_state,
+                    needs_rewrite,
+                ))
+            }
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                let default_state = TodoState {
+                    version: 0,
+                    lists: std::collections::HashMap::new(),
+                };
+                Ok((default_state, false))
+            }
+            Err(e) => Err(Box::new(e) as Box<dyn std::error::Error + Send + Sync>),
+        }
     })
     .await;
 
