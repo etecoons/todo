@@ -108,6 +108,10 @@ pub enum TransKey {
     PromptRenameList,
     ThemeToggle,
     ClearedCompleted(usize),
+    FailedLoadTodos,
+    FailedSaveChanges,
+    LoggedOutSuccessfully,
+    FailedLogout,
 }
 
 pub fn translate(locale: Locale, key: TransKey) -> String {

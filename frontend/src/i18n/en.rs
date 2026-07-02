@@ -41,5 +41,9 @@ pub fn translate(key: TransKey) -> String {
             n,
             if n == 1 { "" } else { "s" }
         ),
+        TransKey::FailedLoadTodos => "Failed to load todos".to_string(),
+        TransKey::FailedSaveChanges => "Failed to save changes".to_string(),
+        TransKey::LoggedOutSuccessfully => "Logged out successfully".to_string(),
+        TransKey::FailedLogout => "Failed to log out".to_string(),
     }
 }

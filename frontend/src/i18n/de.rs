@@ -48,5 +48,9 @@ pub fn translate(key: TransKey) -> String {
             n,
             if n == 1 { "" } else { "n" }
         ),
+        TransKey::FailedLoadTodos => "Fehler beim Laden der Aufgaben".to_string(),
+        TransKey::FailedSaveChanges => "Fehler beim Speichern der Änderungen".to_string(),
+        TransKey::LoggedOutSuccessfully => "Erfolgreich abgemeldet".to_string(),
+        TransKey::FailedLogout => "Abmeldung fehlgeschlagen".to_string(),
     }
 }

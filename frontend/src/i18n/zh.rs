@@ -31,5 +31,9 @@ pub fn translate(key: TransKey) -> String {
         TransKey::PromptRenameList => "输入新列表名称：".to_string(),
         TransKey::ThemeToggle => "切换主题".to_string(),
         TransKey::ClearedCompleted(n) => format!("已清除 {} 个已完成任务", n),
+        TransKey::FailedSaveChanges => "保存更改失败".to_string(),
+        TransKey::FailedLoadTodos => "加载任务失败".to_string(),
+        TransKey::LoggedOutSuccessfully => "成功退出登录".to_string(),
+        TransKey::FailedLogout => "退出登录失败".to_string(),
     }
 }

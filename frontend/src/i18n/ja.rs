@@ -36,5 +36,9 @@ pub fn translate(key: TransKey) -> String {
         TransKey::PromptRenameList => "新しいリスト名を入力してください：".to_string(),
         TransKey::ThemeToggle => "テーマ切り替え".to_string(),
         TransKey::ClearedCompleted(n) => format!("完了済みのタスクを {} 件削除しました", n),
+        TransKey::FailedSaveChanges => "変更の保存に失敗しました".to_string(),
+        TransKey::FailedLoadTodos => "タスクの読み込みに失敗しました".to_string(),
+        TransKey::LoggedOutSuccessfully => "ログアウトしました".to_string(),
+        TransKey::FailedLogout => "ログアウトに失敗しました".to_string(),
     }
 }

@@ -35,5 +35,9 @@ pub fn translate(key: TransKey) -> String {
         TransKey::PromptRenameList => "Введите новое название списка:".to_string(),
         TransKey::ThemeToggle => "Переключить тему".to_string(),
         TransKey::ClearedCompleted(n) => format!("Удалено завершенных задач: {}", n),
+        TransKey::FailedSaveChanges => "Не удалось сохранить изменения".to_string(),
+        TransKey::FailedLoadTodos => "Не удалось загрузить задачи".to_string(),
+        TransKey::LoggedOutSuccessfully => "Успешный выход из системы".to_string(),
+        TransKey::FailedLogout => "Не удалось выйти из системы".to_string(),
     }
 }

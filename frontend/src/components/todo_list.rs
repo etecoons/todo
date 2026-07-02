@@ -42,7 +42,7 @@ pub fn todo_list(props: &TodoListProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 match api::save_todos(&updated_todos).await {
                     Ok(true) => todos.set(Some(updated_todos)),
-                    _ => show_toast.emit(("Failed to save changes".to_string(), ToastType::Error)),
+                    _ => show_toast.emit((crate::i18n::translate(locale, TransKey::FailedSaveChanges), ToastType::Error)),
                 }
             });
         })

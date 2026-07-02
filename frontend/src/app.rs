@@ -67,18 +67,20 @@ pub fn app() -> Html {
     };
 
     let load_todos = {
-        let (todos, current_list, authenticated, show_toast) = (
+        let (todos, current_list, authenticated, show_toast, locale) = (
             todos.clone(),
             current_list.clone(),
             authenticated.clone(),
             show_toast.clone(),
+            locale.clone(),
         );
         move || {
-            let (todos, current_list, authenticated, show_toast) = (
+            let (todos, current_list, authenticated, show_toast, locale) = (
                 todos.clone(),
                 current_list.clone(),
                 authenticated.clone(),
                 show_toast.clone(),
+                locale.clone(),
             );
             wasm_bindgen_futures::spawn_local(async move {
                 match api::fetch_todos_raw().await {
@@ -97,7 +99,7 @@ pub fn app() -> Html {
                         }
                     }
                     Err(_) => {
-                        show_toast.emit(("Failed to load todos".to_string(), ToastType::Error))
+                        show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLoadTodos), ToastType::Error))
                     }
                 }
             });
@@ -183,18 +185,18 @@ pub fn app() -> Html {
     };
 
     let on_logout = {
-        let (authenticated, show_toast, todos) =
-            (authenticated.clone(), show_toast.clone(), todos.clone());
+        let (authenticated, show_toast, todos, locale) =
+            (authenticated.clone(), show_toast.clone(), todos.clone(), locale.clone());
         Callback::from(move |_| {
-            let (authenticated, show_toast, todos) =
-                (authenticated.clone(), show_toast.clone(), todos.clone());
+            let (authenticated, show_toast, todos, locale) =
+                (authenticated.clone(), show_toast.clone(), todos.clone(), locale.clone());
             wasm_bindgen_futures::spawn_local(async move {
                 if matches!(api::logout().await, Ok(true)) {
                     authenticated.set(false);
                     todos.set(None);
-                    show_toast.emit(("Logged out successfully".to_string(), ToastType::Success));
+                    show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::LoggedOutSuccessfully), ToastType::Success));
                 } else {
-                    show_toast.emit(("Failed to log out".to_string(), ToastType::Error));
+                    show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLogout), ToastType::Error));
                 }
             });
         })

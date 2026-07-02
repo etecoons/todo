@@ -22,21 +22,12 @@ pub fn render_app(
     on_logout: Callback<web_sys::MouseEvent>,
     show_toast: Callback<(String, ToastType)>,
 ) -> Html {
-    let show_version = site_config
-        .as_ref()
-        .map(|c| c.show_version)
-        .or_else(|| pin_required.as_ref().map(|p| p.show_version))
-        .unwrap_or(true);
     let show_github = site_config
         .as_ref()
         .map(|c| c.show_github)
         .or_else(|| pin_required.as_ref().map(|p| p.show_github))
         .unwrap_or(true);
     let version = env!("CARGO_PKG_VERSION").to_string();
-    let version_url = format!(
-        "https://github.com/UberMetroid/todo/releases/tag/v{}",
-        version
-    );
 
     let is_auth = *authenticated
         || pin_required
@@ -89,7 +80,12 @@ pub fn render_app(
                 enable_translation={enable_translation}
                 enable_themes={site_config_fallback.enable_themes}
                 enable_print={enable_print}
-                on_print={None}
+                on_print={Some(Callback::from(|_| {
+                    if let Some(w) = web_sys::window() {
+                        let _ = w.print();
+                    }
+                }))}
+                version={Some(version.clone())}
             />
             <div class="container">
                 if is_auth {
@@ -115,7 +111,7 @@ pub fn render_app(
                     }
                 }
             </div>
-            <crate::components::footer::Footer {show_version} {version} {show_github} {version_url}>
+            <crate::components::footer::Footer version={version.clone()} show_github={show_github}>
                 {
                     if let Some((msg, cls)) = &active_notification {
                         html! { <div class={format!("footer-status-text {}", cls)}>{ msg }</div> }

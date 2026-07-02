@@ -51,5 +51,9 @@ pub fn translate(key: TransKey) -> String {
             if n == 1 { "" } else { "s" },
             if n == 1 { "" } else { "s" }
         ),
+        TransKey::FailedSaveChanges => "Échec de l'enregistrement des modifications".to_string(),
+        TransKey::FailedLoadTodos => "Échec du chargement des tâches".to_string(),
+        TransKey::LoggedOutSuccessfully => "Déconnexion réussie".to_string(),
+        TransKey::FailedLogout => "Échec de la déconnexion".to_string(),
     }
 }
