@@ -28,58 +28,6 @@ The Docker image is built with **Nix** (no Alpine, fully reproducible) and publi
 
 ---
 
-## Container Installation
-
-1. Create a `docker-compose.yml` file:
-
-```yaml
-version: '3'
-services:
-  todo:
-    image: ubermetroid/todo:latest
-    container_name: todo
-    restart: unless-stopped
-    ports:
-      - 4403:4403
-    volumes:
-      - ./data:/app/data
-    environment:
-      - PORT=4403
-      - SITE_TITLE=Todo
-      - BASE_URL=http://localhost:4403
-      - ALLOWED_ORIGINS=*
-      - TODO_PIN=1234
-      - TZ=UTC
-      - ENABLE_TRANSLATION=false
-      - ENABLE_THEMES=true
-      - ENABLE_PRINT=false
-```
-
-2. Run the container:
-
-```bash
-docker compose up -d
-```
-
-3. Open your browser and navigate to `http://localhost:4403`.
-
-### Building the Image Locally
-
-To build the Docker container locally from the source files using Nix:
-
-```bash
-nix build .#dockerImage
-docker load < result
-docker tag todo-nix:latest ubermetroid/todo:latest
-```
-
-The image is Nix-built (no Alpine, no Docker daemon dependency for the build).
-For development iteration, use the devShell:
-
-```bash
-nix develop
-```
-
 ## Configuration Options
 
 Configure these settings inside your Docker Compose environment or container environment variables:
