@@ -13,20 +13,10 @@ use shared_core::types::{PinRequiredResponse, SiteConfig, TodoLists};
 #[function_component(App)]
 pub fn app() -> Html {
     let site_config = use_state(|| None::<SiteConfig>);
-    let pin_required = use_state(|| {
-        Some(PinRequiredResponse {
-            required: true,
-            length: 4,
-            locked: false,
-            attempts_left: 5,
-            lockout_minutes: 15,
-            enable_translation: false,
-            enable_themes: true,
-            enable_print: false,
-            show_version: true,
-            show_github: true,
-        })
-    });
+    // Start as "unknown" / public until `/api/pin-required` answers.
+    // Defaulting to required=true made empty-PIN installs flash (or stick on)
+    // the login screen when that request was delayed or blocked.
+    let pin_required = use_state(|| None::<PinRequiredResponse>);
     let authenticated = use_state(|| false);
     let todos = use_state(|| None::<TodoLists>);
     // Optimistic-concurrency token from the last successful GET/POST envelope.

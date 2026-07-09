@@ -31,6 +31,7 @@ data/
 .DS_Store
 Thumbs.db
 
-# Docker files
+# Docker / compose files (keep Containerfile* for podman build context)
 docker-compose*.yml
-Dockerfile*
+Dockerfile
+Dockerfile.*

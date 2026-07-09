@@ -87,16 +87,25 @@ pub async fn rate_limit_middleware(
 
 // ──────────────────────────── origin check ─────────────────────────────
 
-/// Reject cross-origin requests in production mode when an allowlist is
-/// configured. In development, or when `ALLOWED_ORIGINS=*`, requests are
-/// allowed unconditionally.
+/// Reject cross-origin requests in production when an explicit allowlist is
+/// configured. Requests are allowed unconditionally when:
+/// - `ALLOWED_ORIGINS` is `*` (open), or
+/// - `ALLOWED_ORIGINS` is empty / unset (no allowlist configured — typical
+///   Unraid installs only set TODO_PIN; same-origin browser calls often
+///   omit `Origin` and must not be 403'd), or
+/// - not in production (`NODE_ENV` ≠ production).
+///
+/// An empty allowlist previously fell through and rejected every request
+/// without an Origin header, which made the SPA stick on the PIN screen
+/// (frontend defaults `required: true` until `/api/pin-required` succeeds).
 pub async fn origin_validation_middleware(
     State(state): State<SharedState>,
     headers: HeaderMap,
     request: Request<axum::body::Body>,
     next: Next,
 ) -> Response {
-    if state.allowed_origins == "*" || !state.is_production {
+    let origins = state.allowed_origins.trim();
+    if origins.is_empty() || origins == "*" || !state.is_production {
         return next.run(request).await;
     }
 
@@ -107,8 +116,7 @@ pub async fn origin_validation_middleware(
 
     if let Some(origin_str) = origin {
         let origin_norm = extract_origin(origin_str);
-        let allowed = state
-            .allowed_origins
+        let allowed = origins
             .split(',')
             .any(|o| extract_origin(o.trim()) == origin_norm);
         if allowed {
@@ -117,7 +125,9 @@ pub async fn origin_validation_middleware(
             (StatusCode::FORBIDDEN, "Forbidden").into_response()
         }
     } else {
-        (StatusCode::FORBIDDEN, "Forbidden").into_response()
+        // Same-origin navigations / fetches often omit Origin. With an
+        // explicit allowlist still allow these (session/PIN gate the rest).
+        next.run(request).await
     }
 }
 
