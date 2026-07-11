@@ -6,7 +6,11 @@ use yew::prelude::*;
 pub fn use_theme() -> (UseStateHandle<String>, Callback<MouseEvent>) {
     let theme = use_state(|| {
         let raw = StorageService::new().get_item("theme");
-        let raw = if raw.is_empty() { Theme::default().name().to_string() } else { raw };
+        let raw = if raw.is_empty() {
+            Theme::default().name().to_string()
+        } else {
+            raw
+        };
         let theme = if let Some(scheme) = Scheme::from_id(&raw) {
             scheme.to_theme().name().to_string()
         } else {

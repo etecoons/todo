@@ -1,10 +1,10 @@
 pub mod view;
 
-use shared_frontend::storage::StorageService;
 use gloo_timers::callback::Timeout;
-use yew::prelude::*;
-use shared_frontend::i18n::strings::{lookup, StringKey};
 use shared_frontend::i18n::Language;
+use shared_frontend::i18n::strings::{StringKey, lookup};
+use shared_frontend::storage::StorageService;
+use yew::prelude::*;
 
 use crate::api::{self, TodoEnvelope};
 use crate::types::ToastType;
@@ -28,7 +28,11 @@ pub fn app() -> Html {
     let (theme, toggle_theme) = crate::theme::use_theme();
     let locale = use_state(|| {
         let local_lang = StorageService::new().get_item("lang");
-        let local_lang = if local_lang.is_empty() { "en".to_string() } else { local_lang };
+        let local_lang = if local_lang.is_empty() {
+            "en".to_string()
+        } else {
+            local_lang
+        };
         crate::i18n::Locale::from_str(&local_lang)
     });
 
@@ -67,16 +71,17 @@ pub fn app() -> Html {
         use_effect_with((), move |_| {
             use wasm_bindgen::JsCast;
             let window = web_sys::window().unwrap();
-            
+
             let show_toast_online = show_toast.clone();
             let loc_online = locale.clone();
-            let on_online = wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
-                let lang = Language::from_code(loc_online.to_str());
-                show_toast_online.emit((
-                    lookup(StringKey::StatusOnline, lang).to_string(),
-                    ToastType::Success,
-                ));
-            });
+            let on_online =
+                wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
+                    let lang = Language::from_code(loc_online.to_str());
+                    show_toast_online.emit((
+                        lookup(StringKey::StatusOnline, lang).to_string(),
+                        ToastType::Success,
+                    ));
+                });
             window
                 .add_event_listener_with_callback("online", on_online.as_ref().unchecked_ref())
                 .unwrap();
@@ -84,18 +89,19 @@ pub fn app() -> Html {
 
             let show_toast_offline = show_toast.clone();
             let loc_offline = locale.clone();
-            let on_offline = wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
-                let lang = Language::from_code(loc_offline.to_str());
-                show_toast_offline.emit((
-                    lookup(StringKey::StatusOffline, lang).to_string(),
-                    ToastType::Error,
-                ));
-            });
+            let on_offline =
+                wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
+                    let lang = Language::from_code(loc_offline.to_str());
+                    show_toast_offline.emit((
+                        lookup(StringKey::StatusOffline, lang).to_string(),
+                        ToastType::Error,
+                    ));
+                });
             window
                 .add_event_listener_with_callback("offline", on_offline.as_ref().unchecked_ref())
                 .unwrap();
             on_offline.forget();
-            
+
             || ()
         });
     }
@@ -136,9 +142,10 @@ pub fn app() -> Html {
                             todos.set(Some(data));
                         }
                     }
-                    Err(_) => {
-                        show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLoadTodos), ToastType::Error))
-                    }
+                    Err(_) => show_toast.emit((
+                        crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLoadTodos),
+                        ToastType::Error,
+                    )),
                 }
             });
         }
@@ -223,18 +230,35 @@ pub fn app() -> Html {
     };
 
     let on_logout = {
-        let (authenticated, show_toast, todos, locale) =
-            (authenticated.clone(), show_toast.clone(), todos.clone(), locale.clone());
+        let (authenticated, show_toast, todos, locale) = (
+            authenticated.clone(),
+            show_toast.clone(),
+            todos.clone(),
+            locale.clone(),
+        );
         Callback::from(move |_| {
-            let (authenticated, show_toast, todos, locale) =
-                (authenticated.clone(), show_toast.clone(), todos.clone(), locale.clone());
+            let (authenticated, show_toast, todos, locale) = (
+                authenticated.clone(),
+                show_toast.clone(),
+                todos.clone(),
+                locale.clone(),
+            );
             wasm_bindgen_futures::spawn_local(async move {
                 if matches!(api::logout().await, Ok(true)) {
                     authenticated.set(false);
                     todos.set(None);
-                    show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::LoggedOutSuccessfully), ToastType::Success));
+                    show_toast.emit((
+                        crate::i18n::translate(
+                            *locale,
+                            crate::i18n::TransKey::LoggedOutSuccessfully,
+                        ),
+                        ToastType::Success,
+                    ));
                 } else {
-                    show_toast.emit((crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLogout), ToastType::Error));
+                    show_toast.emit((
+                        crate::i18n::translate(*locale, crate::i18n::TransKey::FailedLogout),
+                        ToastType::Error,
+                    ));
                 }
             });
         })

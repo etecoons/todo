@@ -5,8 +5,8 @@ use crate::components::todo_list_handlers;
 use crate::i18n::{TransKey, use_i18n};
 use crate::types::ToastType;
 use shared_core::types::{SiteConfig, TodoLists};
-use shared_frontend::i18n::strings::{lookup, StringKey};
 use shared_frontend::i18n::Language;
+use shared_frontend::i18n::strings::{StringKey, lookup};
 use web_sys::MouseEvent;
 use yew::prelude::*;
 
@@ -46,7 +46,10 @@ pub fn todo_list(props: &TodoListProps) -> Html {
             let show_toast = show_toast.clone();
             let version = *data_version;
             let lang = Language::from_code(locale.to_str());
-            show_toast.emit((lookup(StringKey::StatusSaving, lang).to_string(), ToastType::Success));
+            show_toast.emit((
+                lookup(StringKey::StatusSaving, lang).to_string(),
+                ToastType::Success,
+            ));
             wasm_bindgen_futures::spawn_local(async move {
                 match api::save_todos(&updated_todos, version).await {
                     Ok(resp) if resp.status() == 200 => {
@@ -61,13 +64,22 @@ pub fn todo_list(props: &TodoListProps) -> Html {
                             data_version.set(version + 1);
                         }
                         todos.set(Some(updated_todos));
-                        show_toast.emit((lookup(StringKey::StatusSaved, lang).to_string(), ToastType::Success));
+                        show_toast.emit((
+                            lookup(StringKey::StatusSaved, lang).to_string(),
+                            ToastType::Success,
+                        ));
                     }
                     Ok(resp) if resp.status() == 409 => {
-                        show_toast.emit((lookup(StringKey::StatusConflictError, lang).to_string(), ToastType::Error));
+                        show_toast.emit((
+                            lookup(StringKey::StatusConflictError, lang).to_string(),
+                            ToastType::Error,
+                        ));
                     }
                     _ => {
-                        show_toast.emit((lookup(StringKey::StatusSaveError, lang).to_string(), ToastType::Error));
+                        show_toast.emit((
+                            lookup(StringKey::StatusSaveError, lang).to_string(),
+                            ToastType::Error,
+                        ));
                     }
                 }
             });

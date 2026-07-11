@@ -33,8 +33,8 @@ use middleware::static_files::{
 };
 pub use middleware::{auth, custom, static_files};
 use routes::{get_config, get_pin_required, get_todos, logout, save_todos, verify_pin};
-use state::AppState;
 use shared_backend::tracing_init::{default_log_dir, init_tracing};
+use state::AppState;
 
 #[tokio::main]
 async fn main() {

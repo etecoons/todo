@@ -15,8 +15,8 @@ pub async fn get_todos(State(state): State<SharedState>) -> Response {
 
     // Run the read+parse on a blocking thread — file IO should not
     // block the executor.
-    let read_result = tokio::task::spawn_blocking(move || {
-        match std::fs::read_to_string(&data_file) {
+    let read_result =
+        tokio::task::spawn_blocking(move || match std::fs::read_to_string(&data_file) {
             Ok(content) => {
                 let (todo_state, needs_rewrite) = TodoState::parse_with_migration(&content)
                     .map_err(|e| format!("data file is corrupt: {e}"))?;
@@ -33,9 +33,8 @@ pub async fn get_todos(State(state): State<SharedState>) -> Response {
                 Ok((default_state, false))
             }
             Err(e) => Err(Box::new(e) as Box<dyn std::error::Error + Send + Sync>),
-        }
-    })
-    .await;
+        })
+        .await;
 
     // Return the full envelope so clients can round-trip `version` on save.
     // Returning only `lists` forced version=0 on the next POST and caused 409s
@@ -71,14 +70,23 @@ pub async fn save_todos(
     let (lists, version) = if let Some(lists_val) = value.get("lists") {
         let lists: shared_core::types::TodoLists = match serde_json::from_value(lists_val.clone()) {
             Ok(l) => l,
-            Err(e) => return (StatusCode::BAD_REQUEST, format!("Invalid lists field: {e}")).into_response(),
+            Err(e) => {
+                return (StatusCode::BAD_REQUEST, format!("Invalid lists field: {e}"))
+                    .into_response();
+            }
         };
         let version = value.get("version").and_then(|v| v.as_u64()).unwrap_or(0);
         (lists, version)
     } else {
         let lists: shared_core::types::TodoLists = match serde_json::from_value(value) {
             Ok(l) => l,
-            Err(e) => return (StatusCode::BAD_REQUEST, format!("Invalid TodoLists payload: {e}")).into_response(),
+            Err(e) => {
+                return (
+                    StatusCode::BAD_REQUEST,
+                    format!("Invalid TodoLists payload: {e}"),
+                )
+                    .into_response();
+            }
         };
         (lists, 0)
     };

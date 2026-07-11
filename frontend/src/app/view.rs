@@ -4,7 +4,7 @@ use crate::components::todo_list::TodoList;
 use crate::types::ToastType;
 use shared_core::i18n::Language;
 use shared_core::types::{PinRequiredResponse, SiteConfig, TodoLists};
-use shared_frontend::i18n::strings::{lookup, StringKey};
+use shared_frontend::i18n::strings::{StringKey, lookup};
 use yew::prelude::*;
 
 #[allow(clippy::too_many_arguments)]
