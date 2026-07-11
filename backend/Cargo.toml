@@ -1,17 +1,17 @@
 [package]
 name = "backend"
-version = "3.0.21"
+version = "3.0.22"
 edition = "2024"
 authors = ["UberMetroid"]
 license = "Apache-2.0"
-repository = "https://github.com/UberMetroid/todo"
-homepage = "https://github.com/UberMetroid/todo"
+repository = "https://github.com/etecoons/todo"
+homepage = "https://github.com/etecoons/todo"
 description = "Axum backend service for Todo."
 readme = "../README.md"
 
 [dependencies]
-shared-core = { git = "https://github.com/UberMetroid/shared-assets", tag = "v3.0.19" }
-shared-backend = { git = "https://github.com/UberMetroid/shared-assets", tag = "v3.0.19" }
+shared-core = { git = "https://github.com/etecoons/shared-assets.git", tag = "v3.0.20" }
+shared-backend = { git = "https://github.com/etecoons/shared-assets.git", tag = "v3.0.20" }
 axum = { version = "0.8", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.6", features = ["fs", "cors", "trace"] }

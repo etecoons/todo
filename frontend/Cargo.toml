@@ -1,17 +1,17 @@
 [package]
 name = "frontend"
-version = "3.0.21"
+version = "3.0.22"
 edition = "2024"
 authors = ["UberMetroid"]
 license = "Apache-2.0"
-repository = "https://github.com/UberMetroid/todo"
-homepage = "https://github.com/UberMetroid/todo"
+repository = "https://github.com/etecoons/todo"
+homepage = "https://github.com/etecoons/todo"
 description = "Yew frontend application for Todo."
 readme = "../README.md"
 
 [dependencies]
-shared-core = { git = "https://github.com/UberMetroid/shared-assets", tag = "v3.0.19" }
-shared-frontend = { git = "https://github.com/UberMetroid/shared-assets", tag = "v3.0.19" }
+shared-core = { git = "https://github.com/etecoons/shared-assets.git", tag = "v3.0.20" }
+shared-frontend = { git = "https://github.com/etecoons/shared-assets.git", tag = "v3.0.20" }
 yew = { version = "0.23", features = ["csr"] }
 wasm-bindgen = "=0.2.121"
 wasm-bindgen-futures = "=0.4.71"
