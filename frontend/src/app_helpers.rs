@@ -2,10 +2,10 @@ pub fn setup_online_offline_listeners(
     show_toast: yew::Callback<(String, crate::types::ToastType)>,
     locale: yew::UseStateHandle<crate::i18n::Locale>,
 ) {
-    use wasm_bindgen::JsCast;
-    use shared_frontend::i18n::strings::{StringKey, lookup};
-    use shared_frontend::i18n::Language;
     use crate::types::ToastType;
+    use shared_frontend::i18n::Language;
+    use shared_frontend::i18n::strings::{StringKey, lookup};
+    use wasm_bindgen::JsCast;
 
     let window = web_sys::window().unwrap();
 
