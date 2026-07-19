@@ -1,6 +1,6 @@
 services:
   todo:
-    image: ghcr.io/etecoons/todo:latest
+    image: ghcr.io/studio2201/todo:latest
     container_name: todo
     restart: unless-stopped
     ports:

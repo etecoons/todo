@@ -5,7 +5,7 @@
 # Build stage: rust official image (reliable wasm32 + trunk). Runtime is pure UBI.
 #
 # Build (Podman):
-#   cd ~/Projects/etecoons/todo
+#   cd ~/Projects/studio2201/todo
 #   podman build -f Containerfile.ubi -t todo-ubi:latest .
 #
 # Run:
@@ -17,7 +17,7 @@
 #     todo-ubi:latest
 #
 # Compare size:
-#   podman images | grep -E 'todo-ubi|etecoons/todo'
+#   podman images | grep -E 'todo-ubi|studio2201/todo'
 # =============================================================================
 
 # ---------- build: compile backend + WASM frontend ----------
@@ -64,7 +64,7 @@ FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 
 LABEL org.opencontainers.image.title="todo" \
       org.opencontainers.image.description="Todo (UBI9 minimal pilot)" \
-      org.opencontainers.image.source="https://github.com/etecoons/todo" \
+      org.opencontainers.image.source="https://github.com/studio2201/todo" \
       org.opencontainers.image.base.name="registry.access.redhat.com/ubi9/ubi-minimal"
 
 # ca-certificates for HTTPS outbound; wget for HEALTHCHECK.
