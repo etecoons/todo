@@ -12,8 +12,8 @@
   <Overview>Fast, secure self-hosted task and project management kanban application built in Rust.</Overview>
   <Category>Productivity:Other Network:Web</Category>
   <WebUI>http://[IP]:[PORT:4403]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/studio2201/unraid-templates/main/templates/todo.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/studio2201/unraid-templates/main/icons/todo.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/studio2201/unraid-templates/master/templates/todo.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/studio2201/unraid-templates/master/icons/todo.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
