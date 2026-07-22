@@ -178,8 +178,10 @@ pub fn app() -> Html {
                             .emit(("Authenticated successfully".to_string(), ToastType::Success));
                     } else {
                         pin_error.set(data.error.clone());
-                        if let Some(left) = data.attempts_left {
-                            let mut updated = (*pin_required).clone().unwrap();
+                        if let Some(left) = data.attempts_left
+                            && let Some(ref current) = *pin_required
+                        {
+                            let mut updated = current.clone();
                             updated.attempts_left = left;
                             if let Some(locked) = data.locked {
                                 updated.locked = locked;

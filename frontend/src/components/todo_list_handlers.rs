@@ -14,13 +14,18 @@ pub fn add_todo_handler(
 ) -> Callback<SubmitEvent> {
     Callback::from(move |e: SubmitEvent| {
         e.prevent_default();
-        let form = e.target_dyn_into::<HtmlFormElement>().unwrap();
-        let input_el = form
+        let form = match e.target_dyn_into::<HtmlFormElement>() {
+            Some(f) => f,
+            None => return,
+        };
+        let input_el = match form
             .elements()
             .get_with_name("todoInput")
-            .unwrap()
-            .dyn_into::<HtmlInputElement>()
-            .unwrap();
+            .and_then(|el| el.dyn_into::<HtmlInputElement>().ok())
+        {
+            Some(inp) => inp,
+            None => return,
+        };
         let text = input_el.value().trim().to_string();
         if !text.is_empty() {
             let mut data = todos_data.clone();
@@ -76,10 +81,10 @@ pub fn delete_todo_handler(
     locale: Locale,
 ) -> Callback<(String, String)> {
     Callback::from(move |(id, text): (String, String)| {
-        let window = web_sys::window().unwrap();
-        if window
-            .confirm_with_message(&translate(locale, TransKey::ConfirmDeleteTask(text)))
-            .unwrap_or(false)
+        if let Some(window) = web_sys::window()
+            && window
+                .confirm_with_message(&translate(locale, TransKey::ConfirmDeleteTask(text)))
+                .unwrap_or(false)
         {
             let mut data = todos_data.clone();
             if let Some(list) = data.get_mut(&current_list) {
@@ -151,23 +156,26 @@ pub fn clear_completed_handler(
             ));
             return;
         }
-        if web_sys::window()
-            .unwrap()
-            .confirm_with_message(&translate(
-                locale,
-                TransKey::ConfirmDeleteCompleted(completed_count),
-            ))
-            .unwrap_or(false)
-        {
+        let confirmed = web_sys::window()
+            .map(|w| {
+                w.confirm_with_message(&translate(
+                    locale,
+                    TransKey::ConfirmDeleteCompleted(completed_count),
+                ))
+                .unwrap_or(false)
+            })
+            .unwrap_or(false);
+
+        if confirmed {
             let mut data = todos_data.clone();
-            data.get_mut(&current_list)
-                .unwrap()
-                .retain(|t| !t.completed);
-            save_list_todos.emit(data);
-            show_toast.emit((
-                translate(locale, TransKey::ClearedCompleted(completed_count)),
-                ToastType::Success,
-            ));
+            if let Some(list) = data.get_mut(&current_list) {
+                list.retain(|t| !t.completed);
+                save_list_todos.emit(data);
+                show_toast.emit((
+                    translate(locale, TransKey::ClearedCompleted(completed_count)),
+                    ToastType::Success,
+                ));
+            }
         }
     })
 }

@@ -142,9 +142,16 @@ pub type I18nContext = UseStateHandle<Locale>;
 
 #[hook]
 pub fn use_i18n() -> (Locale, Callback<Locale>, Translator) {
-    let locale_handle = use_context::<I18nContext>().expect("I18nContext not found");
-    let locale = *locale_handle;
-    let set_locale = Callback::from(move |l: Locale| locale_handle.set(l));
-    let t = Translator { locale };
-    (locale, set_locale, t)
+    if let Some(locale_handle) = use_context::<I18nContext>() {
+        let locale = *locale_handle;
+        let set_locale = Callback::from(move |l: Locale| locale_handle.set(l));
+        let t = Translator { locale };
+        (locale, set_locale, t)
+    } else {
+        (
+            Locale::En,
+            Callback::noop(),
+            Translator { locale: Locale::En },
+        )
+    }
 }

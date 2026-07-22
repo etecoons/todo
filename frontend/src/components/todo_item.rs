@@ -115,8 +115,9 @@ pub fn todo_item_component(props: &TodoItemProps) -> Html {
                     let oninput = {
                         let edit_input_value = props.edit_input_value.clone();
                         move |e: InputEvent| {
-                            let el = e.target_dyn_into::<HtmlInputElement>().unwrap();
-                            edit_input_value.set(el.value());
+                            if let Some(el) = e.target_dyn_into::<HtmlInputElement>() {
+                                edit_input_value.set(el.value());
+                            }
                         }
                     };
                     let onkeydown = {

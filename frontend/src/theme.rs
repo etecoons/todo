@@ -37,14 +37,13 @@ pub fn use_theme() -> (UseStateHandle<String>, Callback<MouseEvent>) {
                 Theme::Tourian => Theme::Crateria,
                 Theme::Crateria => Theme::Brinstar,
             };
-            let el = web_sys::window()
-                .unwrap()
-                .document()
-                .unwrap()
-                .document_element()
-                .unwrap();
-            let _ = el.set_attribute("data-theme", next.name());
-            let _ = el.set_attribute("class", next.name());
+            if let Some(el) = web_sys::window()
+                .and_then(|w| w.document())
+                .and_then(|d| d.document_element())
+            {
+                let _ = el.set_attribute("data-theme", next.name());
+                let _ = el.set_attribute("class", next.name());
+            }
             StorageService::new().set_item("theme", next.name());
             theme.set(next.name().to_string());
         })
