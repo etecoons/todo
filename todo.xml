@@ -13,7 +13,7 @@
   <Category>Productivity:Other Network:Web</Category>
   <WebUI>http://[IP]:[PORT:4403]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/studio2201/unraid-templates/master/templates/todo.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/studio2201/unraid-templates/master/icons/todo.png</Icon>
+  <Icon>https://raw.githubusercontent.com/studio2201/.github/master/profile/assets/todo.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
