@@ -153,10 +153,10 @@ fn extract_origin(url: &str) -> &str {
 // they are installed in `main.rs` via `from_fn_with_state` directly —
 // not wrapped here.
 
-/// Re-export `shared_backend::middleware::security_headers_layer` for use
+/// Re-export `crate::middleware::security_headers_layer` for use
 /// with `axum::middleware::from_fn(security_headers_middleware)`.
 pub async fn security_headers_middleware(request: Request, next: Next) -> Response {
-    shared_backend::middleware::security_headers_layer(request, next).await
+    crate::middleware::security_headers_layer(request, next).await
 }
 
 #[cfg(test)]

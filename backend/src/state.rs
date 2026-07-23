@@ -107,7 +107,7 @@ pub fn get_client_ip(
     trust_proxy: bool,
     trusted_proxies: &[ipnet::IpNet],
 ) -> String {
-    shared_backend::server::get_client_ip(headers, socket_addr, trust_proxy, trusted_proxies)
+    crate::ip::get_client_ip(headers, socket_addr, trust_proxy, trusted_proxies)
 }
 
 #[cfg(test)]

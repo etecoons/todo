@@ -1,7 +1,7 @@
 //! `todo` backend entrypoint.
 //!
-//! Configuration is parsed by `shared_backend::server::ServerConfig`,
-//! CORS is `shared_backend::middleware::cors_layer`, and security
+//! Configuration is parsed by `crate::config::AppConfig`,
+//! CORS is `crate::middleware::cors_layer`, and security
 //! headers + HSTS + title injection come from `shared_backend::middleware`.
 //! The remaining middlewares (`auth_middleware`, `rate_limit_middleware`,
 //! `origin_validation_middleware`) are todo-specific and live in
@@ -16,6 +16,7 @@ use tokio::sync::RwLock;
 use tower_http::services::{ServeDir, ServeFile};
 
 pub mod middleware;
+mod ip;
 mod routes;
 mod state;
 #[cfg(test)]
@@ -46,7 +47,7 @@ async fn main() {
     init_tracing(default_log_dir().as_deref());
 
     // ───── config ─────
-    let server_config = Arc::new(shared_backend::server::ServerConfig::from_env("TODO"));
+    let server_config = Arc::new(crate::config::AppConfig::load());
 
     let port = server_config.port;
     let allowed_origins = server_config.allowed_origins.clone();
@@ -110,8 +111,8 @@ async fn main() {
     });
 
     // ───── middleware layers ─────
-    let cors = shared_backend::middleware::cors_layer(&server_config);
-    let hsts_state = shared_backend::middleware::HstsState(server_config.clone());
+    let cors = crate::middleware::cors_layer(&server_config);
+    let hsts_state = crate::middleware::HstsState(server_config.clone());
     let title_state = shared_backend::middleware::TitleState(server_config.clone());
 
     let protected_routes = Router::new()
@@ -155,7 +156,7 @@ async fn main() {
         // HSTS only when HTTPS is in use
         .layer(axum_middleware::from_fn_with_state(
             hsts_state,
-            shared_backend::middleware::hsts_layer,
+            crate::middleware::hsts_layer,
         ))
         // title injection (replaces {{SITE_TITLE}} in HTML)
         .layer(axum_middleware::from_fn_with_state(
