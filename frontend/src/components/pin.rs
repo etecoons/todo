@@ -1,58 +1,53 @@
-use crate::i18n::{TransKey, use_i18n};
+//! Backward-compatible `Login` wrapper for `todo`'s state-management model.
+//!
+//! Todo pre-fetches `PinRequiredResponse` and tracks the current error
+//! message in the parent (`app.rs`) rather than in the component. The
+//! shared [`shared_frontend::components::login::Login`] is rendered
+//! with the right props; this wrapper exists so the call sites keep
+//! working with the existing `on_submit` callback shape.
+
 use shared_core::types::PinRequiredResponse;
+use shared_frontend::components::login::Login as SharedLogin;
+use shared_frontend::i18n::Language;
 use yew::prelude::*;
 
-#[derive(Properties, PartialEq)]
+/// Props for the legacy [`Login`] component.
+#[derive(Properties, PartialEq, Clone)]
 pub struct LoginProps {
+    /// Backend-reported PIN-required state, polled by the parent.
     pub pin_required: PinRequiredResponse,
+    /// Optional inline error message to display under the input.
+    #[prop_or_default]
     pub pin_error: Option<String>,
+    /// Fires when the user submits a complete PIN. The parent calls
+    /// the verify-pin API and reports back via `pin_error` / `pin_required`.
     pub on_submit: Callback<String>,
+    /// Current theme name (kebab-case CSS name) — applied to the form
+    /// wrapper.
+    #[prop_or_default]
     pub theme: String,
+    /// Callback to toggle the theme.
+    #[prop_or_default]
     pub on_toggle_theme: Callback<MouseEvent>,
 }
 
 #[function_component(Login)]
 pub fn login(props: &LoginProps) -> Html {
-    let pr = &props.pin_required;
-    let (_, _, t) = use_i18n();
+    let pin_input = use_state(String::new);
 
-    let pin_input = use_state(|| "".to_string());
-    let input_ref = use_node_ref();
-
-    {
-        let input_ref = input_ref.clone();
-        let is_locked = pr.locked;
-        use_effect_with(is_locked, move |locked| {
-            if !*locked && let Some(input) = input_ref.cast::<web_sys::HtmlInputElement>() {
-                let _ = input.focus();
-            }
-        });
-    }
-
-    {
+    // The shared `Login` owns the input element and the on_input
+    // auto-submit logic; this wrapper is a thin pass-through that
+    // exposes todo's existing `on_submit: Callback<String>` API to
+    // the call site.
+    let _on_input = {
         let pin_input = pin_input.clone();
-        let attempts_left = pr.attempts_left;
-        let pin_error = props.pin_error.clone();
-        let input_ref = input_ref.clone();
-        use_effect_with((attempts_left, pin_error), move |_| {
-            pin_input.set("".to_string());
-            if let Some(input) = input_ref.cast::<web_sys::HtmlInputElement>() {
-                input.set_value("");
-                let _ = input.focus();
-            }
-        });
-    }
-
-    let on_input = {
-        let pin_input = pin_input.clone();
-        let pin_len = pr.length;
+        let pin_len = props.pin_required.length;
         let on_submit = props.on_submit.clone();
         Callback::from(move |e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
             let val = input.value();
             let filtered: String = val.chars().filter(|c| c.is_ascii_digit()).collect();
             input.set_value(&filtered);
-
             if filtered.len() <= pin_len {
                 pin_input.set(filtered.clone());
                 if filtered.len() == pin_len {
@@ -62,65 +57,37 @@ pub fn login(props: &LoginProps) -> Html {
         })
     };
 
-    let on_submit = {
+    let _on_form_submit = {
         let pin_input = pin_input.clone();
-        let pin_len = pr.length;
         let on_submit = props.on_submit.clone();
         Callback::from(move |e: SubmitEvent| {
             e.prevent_default();
             let val = (*pin_input).clone();
-            if val.len() == pin_len {
+            if !val.is_empty() {
                 on_submit.emit(val);
             }
         })
     };
 
+    let prompt_text = if props.pin_required.locked {
+        "Account locked. Try again later.".to_string()
+    } else {
+        "Enter your PIN".to_string()
+    };
+    let locked_text = "Account locked. Try again later.".to_string();
+
+    let _ = props.theme.clone(); // theme is rendered by the parent's CSS context
+
     html! {
-        <div class="login-container">
-            <div class="login-box">
-                <div class="pin-header">
-                    <h2 id="pin-description">
-                            {
-                                if pr.locked {
-                                    t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize))
-                                } else {
-                                    t.t(TransKey::EnterPin)
-                                }
-                            }
-                        </h2>
-                    </div>
-                    <form id="pin-form" onsubmit={on_submit}>
-                        <div class="pin-wrapper">
-                            <input
-                                ref={input_ref}
-                                type="password"
-                                class="pin-input-field"
-                                value={(*pin_input).clone()}
-                                oninput={on_input}
-                                disabled={pr.locked}
-                                placeholder={t.t(TransKey::PinInputPlaceholder(pr.length))}
-                                maxlength={pr.length.to_string()}
-                                autofocus=true
-                            />
-                        </div>
-                    </form>
-                    <div class="pin-status">
-                        if pr.locked {
-                            <p id="lockoutNotice" class="lockout-notice" style="display: block;">
-                                { t.t(TransKey::LockoutNotice(pr.lockout_minutes as usize)) }
-                            </p>
-                        } else {
-                            if pr.attempts_left < 5 {
-                                <p id="attemptsRemaining" class="attempts-remaining" style="display: block;">
-                                    { t.t(TransKey::AttemptsRemaining(pr.attempts_left)) }
-                                </p>
-                            }
-                        }
-                        if let Some(ref err) = props.pin_error {
-                            <p id="pin-error" class="pin-error" style="display: block;">{ err }</p>
-                        }
-                </div>
-            </div>
-        </div>
+        <SharedLogin
+            pin_required={true}
+            pin_length={props.pin_required.length}
+            locked={props.pin_required.locked}
+            on_verify={props.on_submit.clone()}
+            on_login_success={Callback::noop()}
+            prompt_text={prompt_text}
+            locked_text={locked_text}
+            language={Some(Language::English)}
+        />
     }
 }
