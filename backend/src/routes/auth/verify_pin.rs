@@ -102,7 +102,7 @@ pub async fn verify_pin(
         // Success — clear lockout counter, issue session cookie.
         shared_backend::auth::reset_attempts(&client_ip);
 
-        let session_id = shared_backend::session_id::generate_session_id();
+        let session_id = crate::session_id::generate_session_id();
         state
             .active_sessions
             .write()
@@ -112,11 +112,9 @@ pub async fn verify_pin(
         // Todo doesn't have a `base_url` config; the shared helper falls
         // back to checking only the X-Forwarded-Proto header when given
         // an empty base_url, which matches the prior local behaviour.
-        let is_secure = shared_backend::cookie_auth::cookie_should_be_secure(&headers, "");
+        let is_secure = crate::cookie_auth::cookie_should_be_secure(&headers, "");
 
-        let cookie = shared_backend::cookie_auth::build_cookie(
-            "TODO_PIN",
-            &session_id,
+        let cookie = crate::cookie_auth::build_cookie(&session_id,
             state.cookie_max_age_hours,
             is_secure,
         );

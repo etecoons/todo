@@ -1,4 +1,4 @@
-use shared_backend::cookie_auth::build_cookie;
+use crate::cookie_auth::build_cookie;
 use crate::types::TodoState;
 use std::collections::HashMap;
 

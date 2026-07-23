@@ -1,3 +1,5 @@
+mod cookie_auth;
+mod session_id;
 //! `todo` backend entrypoint.
 //!
 //! Configuration is parsed by `shared_backend::server::ServerConfig`,
