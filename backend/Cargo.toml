@@ -11,7 +11,7 @@ readme = "../README.md"
 
 [dependencies]
 shared-core = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.33" }
-shared-backend = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.33" }
+shared-backend = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.39" }
 axum = { version = "0.8", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.7", features = ["fs", "cors", "trace"] }
