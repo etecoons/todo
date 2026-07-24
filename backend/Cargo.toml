@@ -10,7 +10,7 @@ description = "Axum backend service for Todo."
 readme = "../README.md"
 
 [dependencies]
-shared-core = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.33" }
+shared-core = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.39" }
 shared-backend = { git = "https://github.com/studio2201/shared-assets.git", tag = "v3.0.33" }
 axum = { version = "0.8", features = ["macros"] }
 tokio = { version = "1", features = ["full"] }
