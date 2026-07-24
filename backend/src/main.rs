@@ -112,8 +112,8 @@ async fn main() {
 
     // ───── middleware layers ─────
     let cors = crate::middleware::cors_layer(&crate::middleware::CorsState(server_config.clone()));
-    let hsts_state = crate::middleware::crate::middleware::HstsState(server_config.clone());
-    let title_state = shared_backend::middleware::TitleState(server_config.clone());
+    let hsts_state = crate::middleware::crate::middleware::crate::middleware::HstsState(server_config.clone());
+    let title_state = shared_backend::middleware::crate::middleware::TitleState(server_config.clone());
 
     let protected_routes = Router::new()
         .route("/todos", get(get_todos).post(save_todos))
